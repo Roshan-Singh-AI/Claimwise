@@ -1,0 +1,38 @@
+services:
+  claimwise-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: claimwise-api
+    ports:
+      - "8000:8000"
+    environment:
+      GROQ_API_KEY: ${GROQ_API_KEY:-}
+      CLAIMFORGE_PRIMARY_MODEL: ${CLAIMFORGE_PRIMARY_MODEL:-qwen/qwen3.8-27b}
+      CLAIMFORGE_REASONING_MODEL: ${CLAIMFORGE_REASONING_MODEL:-openai/gpt-oss-120b}
+      CLAIMFORGE_TRIAGE_MODEL: ${CLAIMFORGE_TRIAGE_MODEL:-openai/gpt-oss-20b}
+      CLAIMFORGE_JWT_SECRET: ${CLAIMFORGE_JWT_SECRET:-local-demo-only-change-me}
+      CLAIMFORGE_DB_PATH: /app/data/claimwise.sqlite
+    volumes:
+      - claimwise-data:/app/data
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/api/v1/health')"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+
+  claimwise-web:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: claimwise-web
+    ports:
+      - "5173:5173"
+    environment:
+      VITE_API_PROXY_TARGET: http://claimwise-api:8000
+    depends_on:
+      claimwise-api:
+        condition: service_healthy
+
+volumes:
+  claimwise-data:

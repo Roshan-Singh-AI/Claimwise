@@ -1,0 +1,27 @@
+[build-system]
+requires = ["setuptools>=75.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "claimwise-agentic-claims"
+version = "1.0.0"
+description = "A focused, explainable insurance claims workflow using LangGraph, LangChain, Groq and React."
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+  "langgraph==1.2.22",
+  "langchain==1.5.0",
+  "langchain-core==1.8.1",
+  "langchain-groq==1.2.0",
+  "groq==1.7.0",
+  "fastapi==0.163.1",
+  "uvicorn[standard]>=0.30.0",
+  "pydantic==2.14.3",
+  "httpx>=0.27.0",
+  "orjson>=3.10.0",
+  "python-dotenv>=1.0.0",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["backend/tests"]
+pythonpath = ["backend"]
